@@ -13,7 +13,7 @@ import CoreData
 
 extension Article {
 
-    @nonobjc public class func getArticlefetchRequest() -> NSFetchRequest<Article> {
+    @nonobjc public class func getArticleFetchRequest() -> NSFetchRequest<Article> {
         return NSFetchRequest<Article>(entityName: "Article")
     }
 
@@ -21,5 +21,4 @@ extension Article {
     @NSManaged public var title: String?
     @NSManaged public var text: String?
     @NSManaged public var slug: String?
-
 }
