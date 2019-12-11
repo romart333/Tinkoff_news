@@ -18,6 +18,7 @@
 		D7651664239D6186000874FD /* ArticleViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7651663239D6186000874FD /* ArticleViewController.swift */; };
 		D7651666239D6C38000874FD /* DatabaseController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7651665239D6C38000874FD /* DatabaseController.swift */; };
 		D7651669239D6D81000874FD /* ArticleCodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7651668239D6D81000874FD /* ArticleCodable.swift */; };
+		D7DC713B23A13B3B00264BA0 /* StringExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7DC713A23A13B3B00264BA0 /* StringExtension.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -34,6 +35,7 @@
 		D7651663239D6186000874FD /* ArticleViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArticleViewController.swift; sourceTree = "<group>"; };
 		D7651665239D6C38000874FD /* DatabaseController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseController.swift; sourceTree = "<group>"; };
 		D7651668239D6D81000874FD /* ArticleCodable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArticleCodable.swift; sourceTree = "<group>"; };
+		D7DC713A23A13B3B00264BA0 /* StringExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringExtension.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -66,6 +68,7 @@
 		D7651647239D3600000874FD /* TinkoffNews */ = {
 			isa = PBXGroup;
 			children = (
+				D7DC713923A13ACE00264BA0 /* Extensions */,
 				D7651667239D6CF8000874FD /* Codable */,
 				D7651662239D5FBB000874FD /* ViewControllers */,
 				D765165D239D3E29000874FD /* CoreData */,
@@ -104,6 +107,14 @@
 				D7651668239D6D81000874FD /* ArticleCodable.swift */,
 			);
 			path = Codable;
+			sourceTree = "<group>";
+		};
+		D7DC713923A13ACE00264BA0 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				D7DC713A23A13B3B00264BA0 /* StringExtension.swift */,
+			);
+			path = Extensions;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -182,6 +193,7 @@
 				D7651661239D3E86000874FD /* Article+CoreDataProperties.swift in Sources */,
 				D765164B239D3601000874FD /* NewsViewController.swift in Sources */,
 				D7651660239D3E86000874FD /* Article+CoreDataClass.swift in Sources */,
+				D7DC713B23A13B3B00264BA0 /* StringExtension.swift in Sources */,
 				D7651669239D6D81000874FD /* ArticleCodable.swift in Sources */,
 				D7651649239D3601000874FD /* AppDelegate.swift in Sources */,
 				D7651666239D6C38000874FD /* DatabaseController.swift in Sources */,

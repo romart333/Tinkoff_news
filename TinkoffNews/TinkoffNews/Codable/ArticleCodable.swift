@@ -12,7 +12,8 @@ struct RootCodable: Decodable {
 }
 
 struct ResponseCodable: Decodable {
-    let news: [ArticleCodable]
+    let news: [ArticleCodable]?
+    var text: String?
 }
 
 struct ArticleCodable: Decodable {

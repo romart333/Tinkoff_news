@@ -62,6 +62,7 @@ class DatabaseController {
             addedArticles.append(entity)
         }
         
+        DatabaseController.saveContext()
         return addedArticles
     }
     
@@ -110,6 +111,17 @@ class DatabaseController {
         }
         
         return false
+    }
+    
+    class func updateArticleWith(slug: String, toUpdate: (text: String,  countOfRedirects: Int32)) {
+        guard let article = getArticleWith(slug: slug) else {
+            print("Article record  with slug='\(slug)' was not found")
+            return
+        }
+        
+        article.text = toUpdate.text
+        article.countOfRedirects = toUpdate.countOfRedirects
+        DatabaseController.saveContext()
     }
     
     class func getArticleWith(slug: String) -> Article? {

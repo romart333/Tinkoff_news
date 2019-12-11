@@ -65,23 +65,53 @@
                     <navigationItem key="navigationItem" title="Tinkoff news" id="Qhd-ca-89b"/>
                     <connections>
                         <outlet property="tableView" destination="Ymn-Ra-pGM" id="Xdh-84-fVJ"/>
-                        <segue destination="Cfp-SW-A7l" kind="show" identifier="newsDetail" id="Q4F-fz-JOe"/>
+                        <segue destination="Cfp-SW-A7l" kind="show" identifier="goToArticle" id="Q4F-fz-JOe"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1005.7971014492755" y="47.544642857142854"/>
         </scene>
-        <!--Details-->
+        <!--Article-->
         <scene sceneID="qfz-1d-fVO">
             <objects>
-                <viewController title="Details" id="Cfp-SW-A7l" customClass="ArticleViewController" customModule="TinkoffNews" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController title="Article" id="Cfp-SW-A7l" customClass="ArticleViewController" customModule="TinkoffNews" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="5xc-p7-l09">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="6IS-mg-1lc">
+                                <rect key="frame" x="70" y="113" width="274" height="20.5"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" editable="NO" adjustsFontForContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="my6-jH-vYU">
+                                <rect key="frame" x="0.0" y="141.5" width="414" height="720.5"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <inset key="scrollIndicatorInsets" minX="50" minY="50" maxX="50" maxY="50"/>
+                                <string key="text">Lorem ipsum dolor sit er elit lamet, consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nam liber te conscient to factor tum poen legum odioque civiuda.</string>
+                                <fontDescription key="fontDescription" name=".AppleSystemUIFont" family=".AppleSystemUIFont" pointSize="14"/>
+                                <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                            </textView>
+                        </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="my6-jH-vYU" firstAttribute="top" secondItem="6IS-mg-1lc" secondAttribute="bottom" constant="8" symbolic="YES" id="6bE-ij-zgk"/>
+                            <constraint firstItem="my6-jH-vYU" firstAttribute="bottom" secondItem="fsD-Pv-CQh" secondAttribute="bottom" id="Jpa-qL-Dry"/>
+                            <constraint firstItem="fsD-Pv-CQh" firstAttribute="trailing" secondItem="6IS-mg-1lc" secondAttribute="trailing" constant="70" id="KbL-c1-MyR"/>
+                            <constraint firstItem="fsD-Pv-CQh" firstAttribute="trailing" secondItem="my6-jH-vYU" secondAttribute="trailing" id="REW-dH-RiU"/>
+                            <constraint firstItem="my6-jH-vYU" firstAttribute="leading" secondItem="5xc-p7-l09" secondAttribute="leading" id="TGW-QA-sYp"/>
+                            <constraint firstItem="6IS-mg-1lc" firstAttribute="centerX" secondItem="my6-jH-vYU" secondAttribute="centerX" id="X1B-GE-QpX"/>
+                            <constraint firstItem="6IS-mg-1lc" firstAttribute="top" secondItem="fsD-Pv-CQh" secondAttribute="top" constant="25" id="bG6-OL-u8s"/>
+                            <constraint firstItem="6IS-mg-1lc" firstAttribute="leading" secondItem="fsD-Pv-CQh" secondAttribute="leading" constant="70" id="ozt-tu-Wop"/>
+                        </constraints>
                         <viewLayoutGuide key="safeArea" id="fsD-Pv-CQh"/>
                     </view>
+                    <connections>
+                        <outlet property="textView" destination="my6-jH-vYU" id="IVX-63-A4s"/>
+                        <outlet property="titleLabel" destination="6IS-mg-1lc" id="Iaw-fY-5UN"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="qbW-Dr-Zsj" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
