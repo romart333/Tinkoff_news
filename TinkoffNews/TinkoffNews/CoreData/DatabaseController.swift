@@ -58,7 +58,6 @@ class DatabaseController {
             entity.slug = article.slug
             entity.title = article.title
             entity.countOfRedirects = 0
-            print(entity.title)
             addedArticles.append(entity)
         }
         
@@ -98,10 +97,10 @@ class DatabaseController {
     }
     
     class func isArticleExistWith(slug : String) -> Bool {
-        let fetchRequest = Article.getArticleFetchRequest()
-        fetchRequest.predicate = NSPredicate(format: "slug == %@", slug)
-        
         do {
+            let fetchRequest = Article.getArticleFetchRequest()
+            fetchRequest.predicate = NSPredicate(format: "slug == %@", slug)
+            
             let fetchResults = try DatabaseController.getContext().fetch(fetchRequest)
             return fetchResults.count > 0
         } catch {
@@ -111,40 +110,6 @@ class DatabaseController {
         }
         
         return false
-    }
-    
-    class func updateArticleWith(slug: String, toUpdate: (text: String,  countOfRedirects: Int32)) {
-        guard let article = getArticleWith(slug: slug) else {
-            print("Article record  with slug='\(slug)' was not found")
-            return
-        }
-        
-        article.text = toUpdate.text
-        article.countOfRedirects = toUpdate.countOfRedirects
-        DatabaseController.saveContext()
-    }
-    
-    class func getArticleWith(slug: String) -> Article? {
-        let fetchRequest = Article.getArticleFetchRequest()
-        fetchRequest.predicate = NSPredicate(format: "slug == %@", slug)
-        
-        do {
-            let fetched = try DatabaseController.getContext().fetch(fetchRequest)
-            
-            //fetched is an array we need to convert it to a single object
-            if (fetched.count > 1) {
-                print("\(fetched.count) articles was fetched but should be only one")
-                return nil
-            } else {
-                return fetched.first //only use the first object..
-            }
-        } catch {
-            let nserror = error as NSError
-            //TODO: Handle error
-            print(nserror.description)
-        }
-        
-        return nil
     }
     
     class func deleteAllArticles() {

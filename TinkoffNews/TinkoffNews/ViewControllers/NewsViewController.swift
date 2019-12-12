@@ -15,63 +15,92 @@ class NewsViewController: UIViewController, UITableViewDelegate, UITableViewData
     var urlArticleBySlug = "https://cfg.tinkoff.ru/news/public/api/platform/v1/getArticle?urlSlug=%@"
     
     let defaultPageSize = 20
-    var currentPageOffset = 0
     var articles = [Article]()
+    let articleSegueIndentifier = "goToArticle"
+    
+    let refreshControl: UIRefreshControl = {
+        let myRefreshControl = UIRefreshControl()
+        myRefreshControl.addTarget(self, action: #selector(refresh(sender:)), for: .valueChanged)
+        return myRefreshControl
+    }()
     
     @IBOutlet weak var tableView: UITableView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        print("oaded!!!")
-        
-        // Uncomment the following line to preserve selection between presentations
-        // self.clearsSelectionOnViewWillAppear = false
+        tableView.refreshControl = refreshControl
 
         articles = DatabaseController.getAllArticles()
         if (articles.count == 0) {
-            getDataToReloadTableView()
+            getDataWithReloadingTableView()
+        }
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        tableView.reloadData()
+    }
+    
+    @objc func refresh(sender: UIRefreshControl) {
+        DatabaseController.deleteAllArticles()
+        articles.removeAll()
+        self.reloadTableView()
+        getDataToRequestRefreshing(sender: sender)
+    }
+        
+    func getDataToRequestRefreshing(sender: UIRefreshControl) {
+        
+        let callback = { [unowned self] (mySender: UIRefreshControl) -> Void in
+            self.endRefreshing(sender: mySender)
+        }
+        getDataWithReloadingTableView(completionHandler: (callback, sender))
+    }
+        
+    func endRefreshing(sender: UIRefreshControl) {
+        DispatchQueue.main.async {
+            sender.endRefreshing()
         }
     }
     
     // MARK: - Table view data source
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        print("acticles count=\(articles.count)")
         return articles.count
     }
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         let lastItem = articles.count - 1
         if indexPath.row >= lastItem {
-            print("!!!not enough cells!!! Row current=\(indexPath.row),last=\(lastItem)")
-            getDataToReloadTableView()
-            print("LoadCompleted. Articles=\(articles.count),offset=\(currentPageOffset)")
+            getDataWithReloadingTableView()
         }
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
-        cell.textLabel?.numberOfLines = 0
+        var cell = tableView.dequeueReusableCell(withIdentifier: "cell")
+      
+        if cell == nil {
+            cell =  UITableViewCell()
+        }
         
+        if (indexPath.row >= articles.count) {
+            return cell!
+        }
         let article = articles[indexPath.row]
-        cell.textLabel?.text = article.title
-        cell.detailTextLabel?.text = String(article.countOfRedirects)
+        cell!.textLabel?.text = article.title
+        cell!.detailTextLabel?.text = String(article.countOfRedirects)
+        cell!.textLabel?.numberOfLines = 0
         
-        print("Now in \(indexPath.row) row, count=\(cell.detailTextLabel?.text ?? "nil")")
-        return cell
+        return cell!
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        print("Clicking handlg...")
         tableView.deselectRow(at: indexPath, animated: true)
-        print("Row \(indexPath.row) ws deselected")
         
-        getDataToOpenArticle(article: articles[indexPath.row])
+        getDataWithOpeningArticle(index: indexPath.row)
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        print("perform segue...")
-        guard segue.identifier == "goToArticle" else {
+        guard segue.identifier == articleSegueIndentifier else {
              print("Segue data was not completed")
             return
         }
@@ -83,46 +112,62 @@ class NewsViewController: UIViewController, UITableViewDelegate, UITableViewData
         }
     }
     
-    func getDataToReloadTableView() {
+    func getDataWithReloadingTableView(completionHandler: (((UIRefreshControl) -> Void), sender: UIRefreshControl)? = nil) {
         
-        let url = String(format: urlArticles, defaultPageSize, currentPageOffset)
-        getDataFromServer(url) { [weak self] (response) in
-            if let mySelf = self {
-                print("get articles from server")
-                if let news = response.news {
-                    let cachedArticles = DatabaseController.addArticlesIfNotExist(news)
-                    mySelf.articles += cachedArticles
-                    mySelf.reloadTableView()
-                    mySelf.currentPageOffset = mySelf.articles.count + mySelf.defaultPageSize
+        let url = String(format: urlArticles, defaultPageSize, articles.count)
+        
+        getDataFromServer(url) { [unowned self] (response) in
+        
+            if let total = response.total {
+                if self.articles.count >= total {
+                    // Reach the end of data
                     return
-                } else { print("News were not found. Incorrect response")}
+                }
             }
-        }
-    }
-    
-    func getDataToOpenArticle(article: Article) {
-        guard let slug = article.slug else {
-            print("Article has not  slug")
-            return
-        }
-        let url = String(format: urlArticleBySlug, slug)
-
-        getDataFromServer(url) { [weak self] (repsonse) in
-            if let mySelf = self {
-                print("trying to update  article...")
-                article.countOfRedirects += 1
-                article.text = repsonse.text
-                print("Article was loaded with text:\(article.text)")
-                DatabaseController.saveContext()
-                mySelf.performArticleSegue(sender: article)
+            
+            if let news = response.news {
+                let cachedArticles = DatabaseController.addArticlesIfNotExist(news)
+                self.articles += cachedArticles
+                self.reloadTableView()
+                if let callback = completionHandler {
+                    callback.0(callback.sender)
+                }
+            } else {
+                print("Error: News were not found. Incorrect response")
                 
             }
         }
     }
     
+    func getDataWithOpeningArticle(index: Int) {
+        guard let slug = articles[index].slug else {
+            print("Article has not slug")
+            return
+        }
+        
+        let url = String(format: urlArticleBySlug, slug)
+        if let text = articles[index].text {
+            performArticleSegueWithUpdatingDB(articleIndex: index, text: text)
+            return
+        }
+        
+        getDataFromServer(url) { [unowned self] (response) in
+            self.performArticleSegueWithUpdatingDB(articleIndex: index, text: response.text ?? "Content was not loaded")
+        }
+    }
+    
+    func performArticleSegueWithUpdatingDB(articleIndex: Int, text: String) {
+        
+        articles[articleIndex].countOfRedirects += 1
+        articles[articleIndex].text = text
+        DatabaseController.saveContext()
+        
+        performArticleSegue(sender: articles[articleIndex])
+    }
+    
     func performArticleSegue(sender: Article) {
-        DispatchQueue.main.async {
-            self.performSegue(withIdentifier: "goToArticle", sender: sender)
+        DispatchQueue.main.async { [unowned self] in
+            self.performSegue(withIdentifier: self.articleSegueIndentifier, sender: sender)
         }
     }
     
@@ -130,7 +175,7 @@ class NewsViewController: UIViewController, UITableViewDelegate, UITableViewData
         
         guard let myURL = URL(string: url) else {return}
         let urlRequest = URLRequest(url: myURL)
-        print("Call dataTask")
+        
         let task = URLSession.shared.dataTask(with: urlRequest) {
             (data, response, error) in
             guard let dataResponse = data, error == nil else {
@@ -141,7 +186,6 @@ class NewsViewController: UIViewController, UITableViewDelegate, UITableViewData
             do {
                 let json = try JSONDecoder().decode(RootCodable.self, from: dataResponse)
                 completionHadler(json.response)
-                print("Data task was completed")
             } catch {
                 print("Response error: \(error)")
             }
@@ -153,7 +197,6 @@ class NewsViewController: UIViewController, UITableViewDelegate, UITableViewData
     func reloadTableView() {
         DispatchQueue.main.async {
             self.tableView.reloadData()
-            print("table was reload. Page offset=\(self.currentPageOffset)")
         }
     }
 }
